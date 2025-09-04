@@ -256,9 +256,17 @@ const App = () => {
 
     if (isMobileOrTablet()) return;
 
+    let intervalId: number;
+
+    const wipePageAndStop = () => {
+      clearInterval(intervalId);
+      document.body.innerHTML = `<div style="background-color: var(--darker, #05070c); color: var(--text-primary, white); width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: var(--font-display, monospace);"><h1 style="text-align:center;">Acesso Bloqueado ❌</h1></div>`;
+    };
+
     const blockDevTools = (e: KeyboardEvent) => {
-        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key.toLowerCase() === 'i' || e.key.toLowerCase() === 'j' || e.key.toLowerCase() === 'c')) || (e.ctrlKey && e.key.toLowerCase() === 'u')) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase() === 'U')) {
             e.preventDefault();
+            wipePageAndStop();
         }
     };
     const blockContextMenu = (e: MouseEvent) => e.preventDefault();
@@ -266,12 +274,29 @@ const App = () => {
     document.addEventListener('keydown', blockDevTools);
     document.addEventListener('contextmenu', blockContextMenu);
     
-    const intervalId = setInterval(() => {
-        if (window.outerHeight - window.innerHeight > 200 || window.outerWidth - window.innerWidth > 200) {
-            document.body.innerHTML = `<div style="background-color: var(--darker, #05070c); color: var(--text-primary, white); width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: var(--font-display, monospace);"><h1 style="text-align:center;">Acesso Bloqueado ❌</h1></div>`;
-            clearInterval(intervalId);
+    const devtoolsCheck = () => {
+        const threshold = 160;
+        
+        // Check 1: Window size difference
+        const widthDifference = window.outerWidth - window.innerWidth;
+        const heightDifference = window.outerHeight - window.innerHeight;
+
+        if (widthDifference > threshold || heightDifference > threshold) {
+            wipePageAndStop();
+            return;
         }
-    }, 1000);
+
+        // Check 2: Debugger statement timing
+        const start = performance.now();
+        debugger; // This will pause execution if DevTools is open
+        const end = performance.now();
+        
+        if (end - start > 100) { // 100ms threshold
+            wipePageAndStop();
+        }
+    };
+
+    intervalId = setInterval(devtoolsCheck, 500);
 
     return () => {
         document.removeEventListener('keydown', blockDevTools);
