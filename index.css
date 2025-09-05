@@ -584,18 +584,63 @@ input:focus ~ .cyber-glow {
   }
 }
 
-/* Iframe styles for full screen display */
-.iframe-container {
-  width: 100%;
+/* Iframe view styles */
+.iframe-view {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
+  width: 100vw;
+  overflow: hidden;
 }
+
+.iframe-header {
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  height: 60px;
+  background: #191028;
+  border-bottom: 1px solid var(--secondary-dark);
+  flex-shrink: 0;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.back-button {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-button:hover {
+  color: var(--text-primary);
+  border-color: var(--primary);
+  background-color: rgba(0, 240, 255, 0.1);
+}
+
+.header-title {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-left: 1.5rem;
+}
+
+.iframe-container {
+  flex-grow: 1;
+  position: relative;
+}
+
 #hiddenFrame {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   border: none;
   display: block;
   background: white;
@@ -603,7 +648,7 @@ input:focus ~ .cyber-glow {
 
 .logo-overlay {
   display: block;
-  position: fixed;
+  position: absolute;
   bottom: 0;
   right: 0;
   width: 210px;
@@ -832,5 +877,17 @@ input:focus ~ .cyber-glow {
   }
   .logs-table th, .logs-table td {
     padding: 0.5rem;
+  }
+  .iframe-header {
+    padding: 0 1rem;
+    height: 50px;
+  }
+  .header-title {
+    font-size: 1.2rem;
+    margin-left: 1rem;
+  }
+  .back-button {
+    font-size: 0.8rem;
+    padding: 5px 10px;
   }
 }

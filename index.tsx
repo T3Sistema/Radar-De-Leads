@@ -66,6 +66,8 @@ const App = () => {
       if (data.Link) {
         setIframeUrl(data.Link);
         setView('iframe');
+        sessionStorage.setItem('view', 'iframe');
+        sessionStorage.setItem('iframeUrl', data.Link);
       } else {
         alert('Erro: o link não foi retornado pelo servidor.');
       }
@@ -100,6 +102,8 @@ const App = () => {
             setAdminName(data.nome);
             setShowAdminModal(false);
             setView('dashboard');
+            sessionStorage.setItem('view', 'dashboard');
+            sessionStorage.setItem('adminName', data.nome);
         } else {
             throw new Error('Resposta inesperada do servidor.');
         }
@@ -133,8 +137,31 @@ const App = () => {
       alert(error.message);
     }
   };
+  
+  const handleLogout = () => {
+    sessionStorage.removeItem('view');
+    sessionStorage.removeItem('iframeUrl');
+    sessionStorage.removeItem('adminName');
+    setView('login');
+    setIframeUrl('');
+    setAdminName('');
+  };
 
   // --- Effects ---
+
+  useEffect(() => {
+    const savedView = sessionStorage.getItem('view') as 'login' | 'dashboard' | 'iframe' | null;
+    const savedIframeUrl = sessionStorage.getItem('iframeUrl');
+    const savedAdminName = sessionStorage.getItem('adminName');
+
+    if (savedView === 'iframe' && savedIframeUrl) {
+      setView('iframe');
+      setIframeUrl(savedIframeUrl);
+    } else if (savedView === 'dashboard' && savedAdminName) {
+      setView('dashboard');
+      setAdminName(savedAdminName);
+    }
+  }, []);
 
   useEffect(() => {
     if (view === 'dashboard') {
@@ -419,9 +446,17 @@ const App = () => {
   );
 
   const renderIframe = () => (
-    <div className="iframe-container">
+    <div className="iframe-view">
+      <header className="iframe-header">
+        <button onClick={handleLogout} className="back-button">
+          &larr; Voltar
+        </button>
+        <h1 className="header-title">Radar de Leads</h1>
+      </header>
+      <div className="iframe-container">
         <iframe id="hiddenFrame" src={iframeUrl} title="Dashboard Content"></iframe>
         <div className="logo-overlay"></div>
+      </div>
     </div>
   );
 
